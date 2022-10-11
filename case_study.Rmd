@@ -1,13 +1,13 @@
 ---
 title: "Case Study"
-output: github_document
+output: html_document
 ---
 
 Today we're studying a case.
 
 ```{r, include = FALSE, message = FALSE, warning = FALSE}
 library(tidyverse)
-library(ggridges)
+library(leaflet)
 
 knitr::opts_chunk$set(
 	echo = TRUE,
@@ -180,5 +180,21 @@ nyc_airbnb %>%
   sample_n(1000) %>% 
   ggplot(aes(x = lat, y = long, color = price)) +
   geom_point(alpha = .5)
+```
+
+
+Let's make a map by `leaflet`
+
+```{r}
+pal = colorNumeric("viridis", domain = c(0, 1000))
+
+nyc_airbnb %>% 
+  filter(borough == "Manhattan",
+         room_type == "Entire home/apt") %>% 
+  filter(price <= 1000) %>% 
+  sample_n(1000) %>% 
+  leaflet() %>% 
+  addProviderTiles(providers$CartoDB.Positron) %>% 
+  addCircleMarkers(~ lat, ~ long, radius = .5, color = ~ pal(price))
 ```
 
